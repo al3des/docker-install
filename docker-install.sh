@@ -40,5 +40,22 @@ sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plug
 echo "Verifying Docker installation..."
 sudo docker run hello-world
 
+# Manage Docker as a non-root user
+echo "Configuring Docker to run as a non-root user..."
+# Create the docker group if it doesn't exist
+if ! getent group docker > /dev/null; then
+    sudo groupadd docker
+    echo "Docker group created."
+fi
+
+# Add the current user to the docker group
+sudo usermod -aG docker $USER
+echo "Added user '$USER' to the Docker group."
+
+# Notify user to re-login
+echo "You need to log out and log back in for the group membership changes to take effect."
+echo "Alternatively, you can run the following command to apply changes without logging out:"
+echo "    newgrp docker"
+
 # Print success message
-echo "Docker installation completed successfully."
+echo "Docker installation and configuration completed successfully."
