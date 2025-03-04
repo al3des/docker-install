@@ -31,7 +31,14 @@ if [[ "$ID" == "ubuntu" ]]; then
     CODENAME="${UBUNTU_CODENAME:-$VERSION_CODENAME}"
 elif [[ "$ID" == "debian" ]]; then
     REPO_URL="https://download.docker.com/linux/debian"
+    # Temporarily use 'bookworm' if 'noble' is detected
+if [[ "$VERSION_CODENAME" == "noble" ]]; then
+    CODENAME="bookworm"
+else
     CODENAME="${DEBIAN_CODENAME:-$VERSION_CODENAME}"
+fi
+
+    # CODENAME="${DEBIAN_CODENAME:-$VERSION_CODENAME}"
 else
     echo "Unsupported OS"
     exit 1
