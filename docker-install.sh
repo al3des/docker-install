@@ -20,13 +20,26 @@ sudo apt-get install -y ca-certificates curl gnupg lsb-release
 # Set up Docker's official GPG key
 echo "Adding Docker's official GPG key..."
 sudo install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/debian/gpg | sudo tee /etc/apt/keyrings/docker.asc > /dev/null
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo tee /etc/apt/keyrings/docker.asc > /dev/null
 sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Detect if the system is Ubuntu or Debian
+source /etc/os-release
+
+if [[ "$ID" == "ubuntu" ]]; then
+    REPO_URL="https://download.docker.com/linux/ubuntu"
+    CODENAME="${UBUNTU_CODENAME:-$VERSION_CODENAME}"
+elif [[ "$ID" == "debian" ]]; then
+    REPO_URL="https://download.docker.com/linux/debian"
+    CODENAME="${DEBIAN_CODENAME:-$VERSION_CODENAME}"
+else
+    echo "Unsupported OS"
+    exit 1
+fi
 
 # Add the Docker repository
 echo "Adding Docker repository..."
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
-$(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] $REPO_URL $CODENAME stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 # Update the package index again
 echo "Updating package index after adding Docker repository..."
